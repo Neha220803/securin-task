@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CVE List</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>List of CVEs</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>CVE ID</th>
+                <th>Source Identifier</th>
+                <th>Published Date</th>
+                <th>Modified Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cve in cve_data %}
+            <tr>
+                <td>{{ cve.id }}</td>
+                <td>{{ cve.identifier }}</td>
+                <td>{{ cve.published_date or 'N/A' }}</td>
+                <td>{{ cve.last_modified or 'N/A' }}</td>
+                <td>{{ cve.status }}</td>
+
+               
+                <!-- <td>{{ cve.weakness_description or 'N/A' }}</td>
+                <td>
+                    {% if cve.reference_url %}
+                        <a href="{{ cve.reference_url }}" target="_blank">{{ cve.reference_url }}</a><br>
+                        Source: {{ cve.reference_source }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td> -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
