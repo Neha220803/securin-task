@@ -1,46 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVE Details</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        h3, h4 {
-            margin: 10px 0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-    </style>
-</head>
-<body>
-    <h1>{{ cve_data.id }}</h1>
-    <br>
-    <h2>
-        Description:
-    </h2>
-        <p>The debug command in Sendmail is enabled, allowing attackers to execute commands as root.</p>
-   
-    <h2>Metrics</h2>
+{% extends "base.html" %}
 
-     <table>
-        <thead>
+{% block title %}
+CVE Details
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-5">{{ cve_data.id }}</h1>
+    <h2>Description:</h2>
+    <p>The debug command in Sendmail is enabled, allowing attackers to execute commands as root.</p>
+    <h2>Metrics</h2>
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
             <tr>
                 <th>Published Date</th>
-                <th>ELast Modified:</th>
+                <th>Last Modified</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -52,11 +26,11 @@
             </tr>
         </tbody>
     </table>
-    <br>
+
     <h2>Score</h2>
     <h3>CPC:</h3>
-    <table>
-        <thead>
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
             <tr>
                 <th>Base Score</th>
                 <th>Exploitability Score</th>
@@ -71,5 +45,5 @@
             </tr>
         </tbody>
     </table>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -7,4 +7,3 @@ job.minute.on(0)
 job.hour.on(5)
 
 my_cron.write()
-

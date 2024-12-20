@@ -5,7 +5,7 @@ from datetime import datetime, timedelta  # Added 'timedelta'
 
 app = Flask(__name__)
 
-# Database connection function
+# Database connection 
 def get_db_connection():
     return mysql.connector.connect(
         host='localhost',
@@ -14,7 +14,7 @@ def get_db_connection():
         database='cyber_security_db'
     )
 
-# Home route
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -57,24 +57,20 @@ def fetch_and_store_data():
         if response.status_code == 200:
             data = response.json()
             print("Data fetched successfully.")
-
             if isinstance(data, dict) and 'vulnerabilities' in data:
                 for item in data['vulnerabilities']:
                     cve_item = item.get('cve', {})
                     if not cve_item:
                         continue  # Skip invalid entries
-
                     # Extract data
                     item_id = cve_item.get('id', None)
                     source_identifier = cve_item.get('sourceIdentifier', None)
                     published_date = cve_item.get('published', None)
                     modified_date = cve_item.get('lastModified', None)
                     vuln_status = cve_item.get('vulnStatus', None)
-
                     # Extract CVSS metrics (optional)
                     metrics = cve_item.get('metrics', {})
                     cvss_v2 = metrics.get('cvssMetricV2', [])
-
                     # Initialize default values
                     cvss_version = None
                     base_score = None
