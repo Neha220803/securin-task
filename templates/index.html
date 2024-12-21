@@ -1,25 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Document</title>
-</head>
-<body>
-    <h2>This is index page</h2>    
-</body>
-</html>
-
-
-
 {% extends "base.html" %}
 
-{% block title %}
-CVE API
-{% endblock %}
+{% block title %}CVEs API Data{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-    <h1 class="text-center mx-auto">This is index page</h1>
-    <h3>Please types /cves/list in the url to see the result</h3>
-    
+<div class="container my-4 text-center">
+    <h1 class=" mx-auto">This is index page</h1>
+    <h3>Please types /cves/list in the url to see the CVEs result</h3>
 </div>
 {% endblock %}
