@@ -23,7 +23,9 @@ def home():
 def cves_list():
     filter_type = request.args.get('filterType')
     filter_value = request.args.get('filterValue')
-    
+    page = int(request.args.get('page', 1))  # Default to page 1 if not provided
+    results_per_page = 10  # Adjust the number of results per page
+
     query = "SELECT * FROM vulnerabilities"
     params = []
 
@@ -39,21 +41,26 @@ def cves_list():
         query += " WHERE last_modified >= %s"
         params.append(days_ago)
 
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute(query, tuple(params))
-        cve_data = cursor.fetchall()
-    except Exception as e:
-        print("Error fetching data:", e)
-        cve_data = []
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
+    # Fetch total count for pagination
+    count_query = "SELECT COUNT(*) FROM vulnerabilities"
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(count_query, tuple(params))
+    total_results = cursor.fetchone()['COUNT(*)']
+    total_pages = (total_results + results_per_page - 1) // results_per_page
 
-    return render_template('cves_list.html', cve_data=cve_data)
+    # Modify the main query to support pagination
+    query += " LIMIT %s OFFSET %s"
+    params.extend([results_per_page, (page - 1) * results_per_page])
+
+    cursor.execute(query, tuple(params))
+    cve_data = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template('cves_list.html', cve_data=cve_data, page=page, total_pages=total_pages)
+
 
 
 @app.route('/fetch-and-store', methods=['GET'])

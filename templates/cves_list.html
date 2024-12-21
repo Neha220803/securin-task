@@ -1,11 +1,8 @@
 {% extends "base.html" %}
-
-{% block title %}
-CVE List
-{% endblock %}
+{% block title %}CVE List{% endblock %}
 
 {% block content %}
-<div class="container my-4">
+<div class="container my-3">
     <h1 class="text-center">List of CVEs</h1>
     <br>
     <form id="filterForm" method="GET" action="/cves/list">
@@ -33,27 +30,39 @@ CVE List
         <thead class="table-dark">
             <tr>
                 <th>CVE ID</th>
-                <th>Source Identifier</th>
+                <th>Identifier</th>
                 <th>Published Date</th>
-                <th>Modified Date</th>
+                <th>Last Modified</th>
                 <th>Status</th>
             </tr>
         </thead>
         <tbody>
             {% for cve in cve_data %}
-            <tr tr class="clickable-row" data-id="{{ cve.id }}">
+            <tr class="clickable-row" data-id="{{ cve.id }}">
                 <td>{{ cve.id }}</td>
                 <td>{{ cve.identifier }}</td>
                 <td>{{ cve.published_date or 'N/A' }}</td>
                 <td>{{ cve.last_modified or 'N/A' }}</td>
-                <td>{{ cve.status }}</td>
+                <td>{{ cve.status or 'N/A' }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    <div class="d-flex justify-content-center">
+        <div>
+            {% if page > 1 %}
+                <a href="{{ url_for('cves_list', page=page - 1) }}">Previous</a>
+            {% endif %}
+            <span>Page {{ page }} of {{ total_pages }}</span>
+            {% if page < total_pages %}
+                <a href="{{ url_for('cves_list', page=page + 1) }}">Next</a>
+            {% endif %}
+        </div>
+    </div>
 </div>
+
 <script>
-    //click event listener
+    // click event listener
     document.addEventListener("DOMContentLoaded", () => {
         const rows = document.querySelectorAll(".clickable-row");
         rows.forEach(row => {

@@ -13,16 +13,16 @@ CVE Details
     <table class="table table-bordered table-hover">
         <thead class="table-dark">
             <tr>
-                <th>Published Date</th>
-                <th>Last Modified</th>
-                <th>Status</th>
+                <th>Access vector</th>
+                <th>Access Complexity</th>
+                <th>authentication</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>{{ cve_data.published_date }}</td>
-                <td>{{ cve_data.last_modified }}</td>
-                <td>{{ cve_data.status }}</td>
+                <td>{{ cve_data.accessVector }}</td>
+                <td>{{ cve_data.access_complexity }}</td>
+                <td>{{ cve_data.authentication }}</td>
             </tr>
         </tbody>
     </table>
@@ -34,14 +34,14 @@ CVE Details
             <tr>
                 <th>Base Score</th>
                 <th>Exploitability Score</th>
-                <th>Impact Score</th>
+                <th>Base Severity</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>{{ cve_data.baseScore }}</td>
                 <td>{{ cve_data.exploitability_score }}</td>
-                <td>{{ cve_data.authentication }}</td>
+                <td>{{ cve_data.base_severity }}</td>
             </tr>
         </tbody>
     </table>
