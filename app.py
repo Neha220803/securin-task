@@ -1,7 +1,7 @@
-from flask import Flask, render_template, jsonify, request  # Added 'request' here
+from flask import Flask, render_template, jsonify, request
 import requests
 import mysql.connector
-from datetime import datetime, timedelta  # Added 'timedelta'
+from datetime import datetime, timedelta  
 
 app = Flask(__name__)
 
@@ -14,31 +14,47 @@ def get_db_connection():
         database='cyber_security_db'
     )
 
-
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# CVE list route to display data on the HTML page
-@app.route('/cves/list')
+
+@app.route('/cves/list', methods=['GET'])
 def cves_list():
+    filter_type = request.args.get('filterType')
+    filter_value = request.args.get('filterValue')
+    
+    query = "SELECT * FROM vulnerabilities"
+    params = []
+
+    if filter_type == "year":
+        query += " WHERE YEAR(published_date) = %s"
+        params.append(filter_value)
+    elif filter_type == "score":
+        min_score, max_score = map(float, filter_value.split('-'))
+        query += " WHERE baseScore BETWEEN %s AND %s"
+        params.extend([min_score, max_score])
+    elif filter_type == "lastModified":
+        days_ago = datetime.now() - timedelta(days=int(filter_value))
+        query += " WHERE last_modified >= %s"
+        params.append(days_ago)
+
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-
-        # Fetch data from the MySQL database
-        cursor.execute("SELECT * FROM vulnerabilities")
+        cursor.execute(query, tuple(params))
         cve_data = cursor.fetchall()
-
-        return render_template('cves_list.html', cve_data=cve_data)
     except Exception as e:
-        print("Error occurred while fetching data:", e)
-        return jsonify({"error": "Failed to fetch CVE data"}), 500
+        print("Error fetching data:", e)
+        cve_data = []
     finally:
         if cursor:
             cursor.close()
         if conn:
             conn.close()
+
+    return render_template('cves_list.html', cve_data=cve_data)
+
 
 # Route to fetch and store data from the NVD API into MySQL
 @app.route('/fetch-and-store', methods=['GET'])
@@ -139,6 +155,23 @@ def fetch_and_store_data():
             conn.close()
 
 
+
+
+@app.route('/cves/list/<id>')
+def each_cve(id):
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        # to get the record CVE ID wise 
+        query = "SELECT * FROM vulnerabilities WHERE id = %s"
+        cursor.execute(query, (id,))
+        cve_data = cursor.fetchone()
+        if cve_data:
+            return render_template('each_cves.html', cve_data=cve_data)
+        else:
+            return jsonify({"error": "CVE not found"}), 404
+
+
+
 # 1. Filter by CVE ID
 @app.route('/api/cves/by-id', methods=['GET'])
 def get_cve_by_id():
@@ -181,33 +214,6 @@ def get_cves_by_year():
         result = cursor.fetchall()
         if not result:
             return jsonify({"error": "No CVEs found for the specified year"}), 404
-        return jsonify(result), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
-
-# 3. Filter by CVE Score
-@app.route('/api/cves/by-score', methods=['GET'])
-def get_cves_by_score():
-    min_score = request.args.get('min_score', 0)
-    max_score = request.args.get('max_score', 10)
- 
-    if not min_score.isdigit() or not max_score.isdigit():
-        return jsonify({"error": "Min and max scores must be numeric values"}), 400
- 
-    query = """
-        SELECT * FROM vulnerabilities 
-        WHERE baseScore BETWEEN %s AND %s
-    """
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute(query, (min_score, max_score))
-        result = cursor.fetchall()
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500

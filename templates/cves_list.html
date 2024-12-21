@@ -8,6 +8,27 @@ CVE List
 <div class="container my-4">
     <h1 class="text-center">List of CVEs</h1>
     <br>
+    <form id="filterForm" method="GET" action="/cves/list">
+        <div class="row">
+            <div class="col-md-3">
+                <label for="filterType" class="form-label">Filter By</label>
+                <select id="filterType" class="form-select" name="filterType" required>
+                    <option value="">Choose...</option>
+                    <option value="cveid">CVE ID</option>
+                    <option value="year">Published Year</option>
+                    <option value="lastModified">Last Modified (Days Ago)</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="filterValue" class="form-label">Filter Value</label>
+                <input type="text" id="filterValue" class="form-control" name="filterValue" placeholder="Enter value">
+            </div>
+            <div class="col-md-3 align-self-end">
+                <button type="submit" class="btn btn-primary">Apply</button>
+            </div>
+        </div>
+    </form>
+    <br>
     <table class="table table-bordered table-hover">
         <thead class="table-dark">
             <tr>
@@ -20,7 +41,7 @@ CVE List
         </thead>
         <tbody>
             {% for cve in cve_data %}
-            <tr>
+            <tr tr class="clickable-row" data-id="{{ cve.id }}">
                 <td>{{ cve.id }}</td>
                 <td>{{ cve.identifier }}</td>
                 <td>{{ cve.published_date or 'N/A' }}</td>
@@ -31,4 +52,19 @@ CVE List
         </tbody>
     </table>
 </div>
+<script>
+    //click event listener
+    document.addEventListener("DOMContentLoaded", () => {
+        const rows = document.querySelectorAll(".clickable-row");
+        rows.forEach(row => {
+            row.addEventListener("click", () => {
+                const cveId = row.getAttribute("data-id");
+                if (cveId) {
+                    // Redirect
+                    window.location.href = `/cves/list/${cveId}`;
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}
